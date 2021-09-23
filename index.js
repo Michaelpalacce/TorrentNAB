@@ -3,6 +3,7 @@ const {Intents} = require("discord.js");
 const axios = require("axios");
 const parser = require('fast-xml-parser');
 const fs = require("fs");
+const http = require("http");
 
 const client = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] }); //create new client
 
@@ -22,7 +23,8 @@ async function getResult( searchQuery, indexer = 'zamundanet', results = 10 ) {
 
 ( async () => {
 	const results	= await getResult( 'See Season 1' );
-	const magnet	= await axios.get( results[0].enclosure.url );
-
-	fs.writeFileSync( './demoMagnet.torrent', magnet.data )
+	const file		= fs.createWriteStream("demoMagnet2.torrent");
+	const request	= http.get(results[0].enclosure.url, function(response) {
+		response.pipe(file);
+	});
 })();
